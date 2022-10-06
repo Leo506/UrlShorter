@@ -1,0 +1,16 @@
+﻿version: "3.8"
+services:
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+        
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "UrlShorter"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"

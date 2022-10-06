@@ -14,9 +14,21 @@ builder.Services.AddControllers();
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase(nameof(AppDbContext)))
+    .AddDbContext<AppDbContext>(optionsBuilder =>
+    {
+#if DEBUG
+        optionsBuilder.UseInMemoryDatabase(nameof(AppDbContext));
+#else
+        var connString = builder.Configuration.GetConnectionString("postgres");
+        optionsBuilder.UseNpgsql(connString);
+#endif
+    })
+#if DEBUG
+    .AddSingleton<IEncryptValueGiver, MockEncryptValueGiver>()
+#else
     .AddSingleton(provider => builder.Configuration.GetSection("RedisSettings").Get<RedisSettings>())
     .AddSingleton<IEncryptValueGiver, RedisEncryptValueGiver>()
+#endif
     .AddScoped<TokenService>()
     .AddSingleton<IConnectionMultiplexer>(provider =>
     {
