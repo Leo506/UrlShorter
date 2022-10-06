@@ -1,4 +1,5 @@
 ﻿using HashidsNet;
+using Microsoft.EntityFrameworkCore;
 using UrlShorter.Core.Abstractions;
 using UrlShorter.Database;
 using UrlShorter.Models;
@@ -21,6 +22,10 @@ public class TokenService
         var hashids = new Hashids("this is my salt");
         try
         {
+            var candidate = await _dbContext.Links.FirstOrDefaultAsync(x => x.LongUrl == longUrl);
+            if (candidate != null)
+                return candidate.Token;
+            
             var id = await _valueGiver.GetValue();
             var token = hashids.EncodeLong(id);
 
