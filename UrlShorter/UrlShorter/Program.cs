@@ -12,10 +12,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseInMemoryDatabase(nameof(AppDbContext));
+});
 builder.Services.AddSingleton<IEncryptValueGiver, MockEncryptValueGiver>()
-    .AddSingleton<TokenService>();
+    .AddScoped<TokenService>();
 
-builder.Services.AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase(nameof(AppDbContext)));
 
 var app = builder.Build();
 
