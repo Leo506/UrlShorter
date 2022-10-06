@@ -15,11 +15,19 @@ public class TokenService
     public string GenerateTokenFor(string longUrl)
     {
         var hashids = new Hashids("this is my salt");
-        var id = _valueGiver.GetValue();
-        var token = hashids.EncodeLong(id);
+        try
+        {
+            var id = _valueGiver.GetValue();
+            var token = hashids.EncodeLong(id);
 
-        // TODO save id and token in database 
-        
-        return token;
+            // TODO save id and token in database 
+
+            return token;
+        }
+        catch (Exception)
+        {
+        }
+
+        return string.Empty;
     }
 }
