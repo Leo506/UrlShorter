@@ -6,13 +6,13 @@ public class MockEncryptValueGiver : IEncryptValueGiver
 {
     private int _max = 1000;
     private int _current = 0;
-    public long GetValue()
+    public Task<long> GetValue()
     {
         if (_current > _max)
         {
             _current = 0;
         }
 
-        return _current++;
+        return Task.FromResult<long>(_current++);
     }
 }

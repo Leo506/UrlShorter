@@ -19,12 +19,12 @@ public class RedisEncryptValueGiver : IEncryptValueGiver
         _database = connection.GetDatabase();
     }
 
-    public long GetValue()
+    public async Task<long> GetValue()
     {
         if (_currentValue + 1 > _maxValue)
         {
             _currentValue = _maxValue + 1;
-            _maxValue = _database.StringIncrement(_settings.CounterKey, _settings.Step);
+            _maxValue = await _database.StringIncrementAsync(_settings.CounterKey, _settings.Step);
         }
 
         return _currentValue++;

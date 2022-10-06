@@ -21,7 +21,7 @@ public class TokenService
         var hashids = new Hashids("this is my salt");
         try
         {
-            var id = _valueGiver.GetValue();
+            var id = await _valueGiver.GetValue();
             var token = hashids.EncodeLong(id);
 
             await _dbContext.Links.AddAsync(new LinkModel()
