@@ -1,18 +1,22 @@
 ﻿using HashidsNet;
 using UrlShorter.Core.Abstractions;
+using UrlShorter.Database;
+using UrlShorter.Models;
 
 namespace UrlShorter.Core;
 
 public class TokenService
 {
     private readonly IEncryptValueGiver _valueGiver;
+    private readonly AppDbContext _dbContext;
 
-    public TokenService(IEncryptValueGiver valueGiver)
+    public TokenService(IEncryptValueGiver valueGiver, AppDbContext dbContext)
     {
         _valueGiver = valueGiver;
+        _dbContext = dbContext;
     }
 
-    public string GenerateTokenFor(string longUrl)
+    public async Task<string> GenerateTokenFor(string longUrl)
     {
         var hashids = new Hashids("this is my salt");
         try
@@ -20,8 +24,12 @@ public class TokenService
             var id = _valueGiver.GetValue();
             var token = hashids.EncodeLong(id);
 
-            // TODO save id and token in database 
-
+            await _dbContext.Links.AddAsync(new LinkModel()
+            {
+                LongUrl = longUrl,
+                Token = token
+            });
+            await _dbContext.SaveChangesAsync();
             return token;
         }
         catch (Exception)
