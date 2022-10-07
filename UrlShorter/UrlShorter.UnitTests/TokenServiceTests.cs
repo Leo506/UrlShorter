@@ -1,8 +1,10 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using UrlShorter.Core;
 using UrlShorter.Core.Abstractions;
 using UrlShorter.Database;
+using UrlShorter.Models;
 using UrlShorter.UnitTests.Helpers;
 
 namespace UrlShorter.UnitTests;
@@ -41,5 +43,30 @@ public class TokenServiceTests
         
         // assert
         actual.Should().Be(true);
+    }
+
+    [Fact]
+    public async Task GenerateTokenFor_Record_Already_Exists_Returns_Record()
+    {
+        // arrange
+        var valueGiver = new Mock<IEncryptValueGiver>();
+        valueGiver.Setup(giver => giver.GetValueAsync()).Returns(Task.FromResult<long>(100));
+        var dbContext = DbHelper.GetDbContext(nameof(GenerateTokenFor_Record_Already_Exists_Returns_Record));
+        var sut = new TokenService(valueGiver.Object, dbContext);
+
+        const string longUrl = "https://long_long_url.com";
+        const string token = "myToken";
+        await dbContext.Links.AddAsync(new LinkModel()
+        {
+            LongUrl = longUrl,
+            Token = token
+        });
+        await dbContext.SaveChangesAsync();
+
+        // act
+        var actual = await sut.GenerateTokenFor(longUrl);
+
+        // assert
+        actual.Should().Be(token);
     }
 }
