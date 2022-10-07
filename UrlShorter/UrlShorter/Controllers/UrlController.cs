@@ -8,17 +8,17 @@ namespace UrlShorter.Controllers;
 public class UrlController : Controller
 {
     private readonly TokenService _tokenService;
-    private readonly AppDbContext _dbContext;
 
-    public UrlController(TokenService tokenService, AppDbContext dbContext)
+    public UrlController(TokenService tokenService)
     {
         _tokenService = tokenService;
-        _dbContext = dbContext;
     }
 
     [HttpPost("/short/url")]
-    public async Task<IActionResult> ShortUrl([FromBody] string longUrl)
+    public async Task<ActionResult> ShortUrl([FromBody] string longUrl)
     {
+        if (string.IsNullOrEmpty(longUrl))
+            return BadRequest();
         var token = await _tokenService.GenerateTokenFor(longUrl);
         return Ok($"https://{HttpContext.Request.Host}/long/{token}");
     }
@@ -26,8 +26,9 @@ public class UrlController : Controller
     [HttpGet("/long/{token}")]
     public async Task<IActionResult> LongUrl(string token)
     {
-        var link = await _dbContext.Links.FirstOrDefaultAsync(x => x.Token == token);
-        var longUrl = link.LongUrl;
-        return Redirect(longUrl);
+        var tokenResult = await _tokenService.GetByToken(token);
+        if (tokenResult is null)
+            return BadRequest();
+        return Redirect(tokenResult);
     }
 }

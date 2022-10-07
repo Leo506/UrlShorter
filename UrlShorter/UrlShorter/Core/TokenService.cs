@@ -43,4 +43,10 @@ public class TokenService
 
         return string.Empty;
     }
+
+    public async Task<string?> GetByToken(string token)
+    {
+        var candidate = await _dbContext.Links.FirstOrDefaultAsync(model => model.Token == token);
+        return candidate is null ? null : candidate!.LongUrl;
+    }
 }
