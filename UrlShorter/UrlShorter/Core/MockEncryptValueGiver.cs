@@ -6,7 +6,7 @@ public class MockEncryptValueGiver : IEncryptValueGiver
 {
     private int _max = 1000;
     private int _current = 0;
-    public Task<long> GetValue()
+    public Task<long> GetValueAsync()
     {
         if (_current > _max)
         {

@@ -6,25 +6,23 @@ namespace UrlShorter.Core;
 
 public class RedisEncryptValueGiver : IEncryptValueGiver
 {
-    private readonly IDatabase _database;
+    private readonly IRedisService _redisService;
 
     private long _currentValue;
     private long _maxValue;
 
-    private readonly RedisSettings _settings;
 
-    public RedisEncryptValueGiver(IConnectionMultiplexer connection, RedisSettings settings)
+    public RedisEncryptValueGiver(IRedisService redisService)
     {
-        _settings = settings;
-        _database = connection.GetDatabase();
+        _redisService = redisService;
     }
 
-    public async Task<long> GetValue()
+    public async Task<long> GetValueAsync()
     {
         if (_currentValue + 1 > _maxValue)
         {
             _currentValue = _maxValue + 1;
-            _maxValue = await _database.StringIncrementAsync(_settings.CounterKey, _settings.Step);
+            _maxValue = await _redisService.GetCounter();
         }
 
         return _currentValue++;

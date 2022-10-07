@@ -26,7 +26,7 @@ public class TokenService
             if (candidate != null)
                 return candidate.Token;
             
-            var id = await _valueGiver.GetValue();
+            var id = await _valueGiver.GetValueAsync();
             var token = hashids.EncodeLong(id);
 
             await _dbContext.Links.AddAsync(new LinkModel()

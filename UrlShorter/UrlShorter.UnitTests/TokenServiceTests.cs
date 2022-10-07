@@ -14,7 +14,7 @@ public class TokenServiceTests
     {
         // arrange
         var valueGiver = new Mock<IEncryptValueGiver>();
-        valueGiver.Setup(x => x.GetValue()).Returns(Task.FromResult<long>(1000));
+        valueGiver.Setup(x => x.GetValueAsync()).Returns(Task.FromResult<long>(1000));
         var sut = new TokenService(valueGiver.Object,
             DbHelper.GetDbContext(nameof(GenerateTokenFor_All_Good_Returns_Token)));
 
@@ -31,7 +31,7 @@ public class TokenServiceTests
     {
         // arrange
         var valueGiver = new Mock<IEncryptValueGiver>();
-        valueGiver.Setup(x => x.GetValue()).Throws<Exception>();
+        valueGiver.Setup(x => x.GetValueAsync()).Throws<Exception>();
         var sut = new TokenService(valueGiver.Object,
             DbHelper.GetDbContext(nameof(GenerateTokenFor_ValueGiver_Throws_Returns_Empty_String)));
 

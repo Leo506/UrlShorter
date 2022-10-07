@@ -2,5 +2,5 @@
 
 public interface IEncryptValueGiver
 {
-    Task<long> GetValue();
+    Task<long> GetValueAsync();
 }
