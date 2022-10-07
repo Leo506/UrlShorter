@@ -27,14 +27,16 @@ builder.Services
     .AddSingleton<IEncryptValueGiver, MockEncryptValueGiver>()
 #else
     .AddSingleton(provider => builder.Configuration.GetSection("RedisSettings").Get<RedisSettings>())
-    .AddSingleton<IEncryptValueGiver, RedisEncryptValueGiver>()
-#endif
-    .AddScoped<TokenService>()
     .AddSingleton<IConnectionMultiplexer>(provider =>
     {
         var connString = builder.Configuration.GetConnectionString("redis");
         return ConnectionMultiplexer.Connect(connString);
-    });
+    })
+    .AddSingleton<IRedisService, RedisService>()
+    .AddSingleton<IEncryptValueGiver, RedisEncryptValueGiver>()
+#endif
+    .AddScoped<TokenService>();
+    
 
 var app = builder.Build();
 
