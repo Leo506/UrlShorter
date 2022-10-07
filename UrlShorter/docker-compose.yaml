@@ -20,7 +20,7 @@ services:
       - app-tier
 
   shorter:
-    image: leo/urlshorter
+    build: .
     ports:
       - "80:80"
       - "443:443"
@@ -31,7 +31,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_ENVIRONMENT=Release
     volumes:
-      - C:\Users\790ma\.aspnet\https:/https
+      - $PATH_TO_SERTIFICATE:/https
     depends_on:
       - redis
       - postgres
